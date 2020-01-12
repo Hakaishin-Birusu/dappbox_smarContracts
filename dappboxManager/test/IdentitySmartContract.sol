@@ -1,0 +1,186 @@
+pragma solidity >=0.4.21 <0.6.0;
+
+/**
+ * Note : for testing purpose Date is not taken in consideration , as date in solidity
+ * date an time is stored in uinx epoch time format 
+ */
+
+contract IdentitySmartContract
+{
+   address dappboxAddress;
+   address owner;
+
+   /**
+    * @dev struct to store different information regarding specific user 
+    */
+   struct Dictionary
+   {
+    address Address;
+    string UserName;
+    uint256 RegistrationDate;
+    string DefaultURL;
+    string ShortenURL;
+   }
+   
+   mapping(address => Dictionary[] ) dictionary ;
+
+   /**
+    * @dev constructor to set up dappbox public address and deployer of contract
+    * put account[1] as dappboxAddress in the following constructor from ganache test rpc 
+    * Important Note : use correct checksummed address only 
+    */
+
+
+   constructor ()public 
+   {
+      dappboxAddress = 0xfd146bF82B4BDBd0D1d508FFFF704725f5b8ff3f;
+      owner = msg.sender ;
+
+   }
+
+
+   modifier onlyOwner()
+   {
+      require(msg.sender==owner,"authentication failed");
+      _;
+   }
+
+
+   /**
+    * @dev stores the details in a structure mapped to a public account of ixxo
+    * This function can only be accessed by the deployeer of the contracts
+    * @param _address : address of the entity whose information is to be stored
+    * @param _userName : name of the user
+    * @param _defaultURL  : default url generated at the time of register
+    * @param _shortenURL : shortened url of the user
+    * @return bool : on successful storage of user details
+    */
+   function addUsers(
+      address _address , string memory _userName , string memory _defaultURL , string memory _shortenURL 
+      )public onlyOwner returns (bool)
+   {
+      Dictionary memory currentUserInfo;
+
+      currentUserInfo.Address = _address;
+      currentUserInfo.UserName = _userName;
+      currentUserInfo.RegistrationDate = now ;
+      currentUserInfo.DefaultURL =_defaultURL ;
+      currentUserInfo.ShortenURL = _shortenURL;
+      dictionary[dappboxAddress].push(currentUserInfo);
+
+      return true ;
+   }
+
+
+   /**
+    * @dev get details of user by using address of the user
+    * @param _Address address of user whose info if to be fetched
+    */
+   function getByAddress(address _Address) public view returns (string memory, string memory , string memory)
+   {
+      for(uint256 i=0 ; i<= (dictionary[dappboxAddress].length -1) ; i++)
+      {
+         address Address = dictionary[dappboxAddress][i].Address ;
+         if (_Address == Address)
+         {
+            string memory Username = dictionary[dappboxAddress][i].UserName ;
+           // uint256 Date = dictionary[dappboxAddress][i].RegistrationDate ;
+            string memory DUrl = dictionary[dappboxAddress][i].DefaultURL ;
+            string memory SUrl = dictionary[dappboxAddress][i].ShortenURL ;
+                  
+            return(Username , DUrl , SUrl);
+         }
+
+      }
+
+   }
+
+ /**
+    * @dev fetch all details of users by using username
+    * @param _UserName : name of the user by whic all other attributes are to be fetched 
+    */
+   function getByUserName(string memory _UserName) public view returns (address,  string memory ,  string memory)
+   {
+      for(uint256 i=0 ; i<= (dictionary[dappboxAddress].length -1) ; i++)
+      { string memory String = (dictionary[dappboxAddress][i].UserName) ;
+
+      bool res = compareStrings(_UserName ,String);
+         if (res == true )
+         {
+            address Address = dictionary[dappboxAddress][i].Address  ;
+           // uint256 Date = dictionary[dappboxAddress][i].RegistrationDate ;
+            string memory DUrl = dictionary[dappboxAddress][i].DefaultURL ;
+            string memory SUrl = dictionary[dappboxAddress][i].ShortenURL ;
+                  
+            return( Address, DUrl , SUrl);
+         }
+
+      }
+
+   }
+ /**
+    * @dev fetch all the user information using URl
+    * @param _DefaultURL : URl genrated at the time of Dappbox register 
+    */
+   function getByUrl(string memory _DefaultURL) public view returns (address , string memory ,string memory)
+   {
+      for(uint256 i=0 ; i<= (dictionary[dappboxAddress].length -1) ; i++)
+      { 
+          string memory URL1 =  dictionary[dappboxAddress][i].DefaultURL ; 
+          bool res = compareStrings(_DefaultURL ,URL1);
+         if (res == true)
+         {
+            address Address = dictionary[dappboxAddress][i].Address  ;
+            string memory Username = dictionary[dappboxAddress][i].UserName ;
+           // uint256 Date = dictionary[dappboxAddress][i].RegistrationDate ;
+            string memory SUrl = dictionary[dappboxAddress][i].ShortenURL ;
+                  
+                  return(Address , Username , SUrl);
+         }
+
+      }
+
+   }
+
+
+ /**
+    * @dev fetch all the information about user using shortened url
+    * @param _ShortenURl : shorneded url of the url generated by dappbox 
+    */
+   function getByShortUrl(string memory _ShortenURl) public view returns (address, string memory , string memory)
+   {
+      for(uint256 i=0 ; i<= (dictionary[dappboxAddress].length -1) ; i++)
+      {
+         string memory url = dictionary[dappboxAddress][i].ShortenURL ;  
+         bool res  = compareStrings(_ShortenURl , url );
+         if (res == true)
+         {
+            address Address = dictionary[dappboxAddress][i].Address  ;
+            string memory Username = dictionary[dappboxAddress][i].UserName ;
+           // uint256 Date = dictionary[dappboxAddress][i].RegistrationDate ;
+            string memory DUrl = dictionary[dappboxAddress][i].DefaultURL ;
+                  
+            return (Address , Username , DUrl);
+         }
+
+      }
+
+   }
+
+
+   /**
+    * @dev compares two string on the basis of length and than does the hash comparison 
+    * hash formed by strings
+    * @param a : first string
+    * @param b : second string
+    */
+   function compareStrings(string memory a, string memory b) internal pure returns (bool)
+    {
+    if(bytes(a).length != bytes(b).length) {
+        return false;
+    } else {
+      return keccak256(abi.encode(a)) == keccak256(abi.encode(b));
+    }
+    }
+
+}

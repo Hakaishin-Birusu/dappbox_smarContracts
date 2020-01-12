@@ -1,0 +1,3238 @@
+{
+  "contractName": "FolderNotarizationManagement",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "usedFolders",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "blockNumber",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "blockTimeStamp",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "dappboxfolder",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "permissionOfFrom",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "name": "permissionOfTo",
+          "type": "uint8"
+        }
+      ],
+      "name": "FolderEvent",
+      "type": "event"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.0+commit.1d4f565a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"usedFolders\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"blockNumber\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"blockTimeStamp\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"dappboxfolder\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"from\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"permissionOfFrom\",\"type\":\"uint8\"},{\"indexed\":false,\"name\":\"permissionOfTo\",\"type\":\"uint8\"}],\"name\":\"FolderEvent\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/sagar/Desktop/delivery final/28_may_ixxo_allsmart_contract/ixxo_smartcontracts/AccessRight/PermissionManagementComplete/contracts/FolderPermissionManagement/FolderNotarizationManagement.sol\":\"FolderNotarizationManagement\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/sagar/Desktop/delivery final/28_may_ixxo_allsmart_contract/ixxo_smartcontracts/AccessRight/PermissionManagementComplete/contracts/FolderPermissionManagement/FolderNotarizationManagement.sol\":{\"keccak256\":\"0x6fda578a576787f111e81592ad4dbe1744236461d3f2ccdcce94bef15515feb3\",\"urls\":[\"bzzr://581ddc8bacf5c11ec3eee44f4798f3af2b4d59eed9c23b29621459b608cb51e4\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5060d48061001f6000396000f3fe608060405260043610603e5763ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663885a097381146043575b600080fd5b348015604e57600080fd5b50607f60048036036020811015606357600080fd5b503573ffffffffffffffffffffffffffffffffffffffff166093565b604080519115158252519081900360200190f35b60036020526000908152604090205460ff168156fea165627a7a72305820fa58db690cd4d590415a475e35f241918948d803cbabf30f5447499941d8b2330029",
+  "deployedBytecode": "0x608060405260043610603e5763ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663885a097381146043575b600080fd5b348015604e57600080fd5b50607f60048036036020811015606357600080fd5b503573ffffffffffffffffffffffffffffffffffffffff166093565b604080519115158252519081900360200190f35b60036020526000908152604090205460ff168156fea165627a7a72305820fa58db690cd4d590415a475e35f241918948d803cbabf30f5447499941d8b2330029",
+  "sourceMap": "34:1861:4:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;34:1861:4;;;;;;;",
+  "deployedSourceMap": "34:1861:4:-;;;;;;;;;;;;;;;;;;;;;;;421:43;;8:9:-1;5:2;;;30:1;27;20:12;5:2;421:43:4;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;421:43:4;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o",
+  "source": "pragma solidity >=0.4.21 <0.6.0;\n\ncontract FolderNotarizationManagement{\n  address owner;\n\n  uint folderCount;\n\n  enum PermissionType {master, owner, write, read, none}\n\n\n   struct FolderAccessRight {\n    uint blockNumber;\n    uint timestamp;\n    address dappboxfolder;\n    address from;\n    address to;\n    PermissionType permissionOfFrom;\n    PermissionType permissionOfTo;\n  }\n\n  FolderAccessRight[] foldhistory;\n  \n  mapping(address => bool) public usedFolders;\n\n   event FolderEvent(uint blockNumber, uint blockTimeStamp, address dappboxfolder, address from, address to, PermissionType permissionOfFrom, PermissionType permissionOfTo);\n\n  /**\n  * @dev use to add history of transfers and emit transfer event\n  * @param dappboxfolder dappbox folder address\n  * @param _from address from whom the transfer is originated\n  * @param _to addess to whom transfer is done\n  * @param _permissionOfFrom enum PermissionType of delegator\n  * @param _permissionOfFrom enum PermissionType of delegated\n  */\n\n  function transferFolder(address dappboxfolder, address _from, address _to, PermissionType _permissionOfFrom, PermissionType _permissionOfTo) internal{\n    foldhistory.push(FolderAccessRight(block.number, block.timestamp, dappboxfolder, _from, _to, _permissionOfFrom, _permissionOfTo));\n    emit FolderEvent(block.number, block.timestamp,  dappboxfolder, _from, _to, _permissionOfFrom, _permissionOfTo);\n  }\n  \n  /**\n  * @dev use to check if the documents exists or not\n  * @param dappboxfolder dappbox folder address\n  */\n  \n  function folderExists(address dappboxfolder) view internal returns (bool exists){\n    if (usedFolders[dappboxfolder]) {\n      exists = true;\n    }else{\n      exists= false;\n    }\n    return exists;\n  }\n\n  /**\n  * @dev returns the total number of documents/hashes\n  */\n  function getLatest() view internal returns (uint latest){\n      return folderCount;\n      \n  }\n}\n",
+  "sourcePath": "/home/sagar/Desktop/delivery final/28_may_ixxo_allsmart_contract/ixxo_smartcontracts/AccessRight/PermissionManagementComplete/contracts/FolderPermissionManagement/FolderNotarizationManagement.sol",
+  "ast": {
+    "absolutePath": "/home/sagar/Desktop/delivery final/28_may_ixxo_allsmart_contract/ixxo_smartcontracts/AccessRight/PermissionManagementComplete/contracts/FolderPermissionManagement/FolderNotarizationManagement.sol",
+    "exportedSymbols": {
+      "FolderNotarizationManagement": [
+        5874
+      ]
+    },
+    "id": 5875,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 5751,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".21",
+          "<",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:32:4"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 5874,
+        "linearizedBaseContracts": [
+          5874
+        ],
+        "name": "FolderNotarizationManagement",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 5753,
+            "name": "owner",
+            "nodeType": "VariableDeclaration",
+            "scope": 5874,
+            "src": "75:13:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 5752,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "75:7:4",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 5755,
+            "name": "folderCount",
+            "nodeType": "VariableDeclaration",
+            "scope": 5874,
+            "src": "93:16:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 5754,
+              "name": "uint",
+              "nodeType": "ElementaryTypeName",
+              "src": "93:4:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "canonicalName": "FolderNotarizationManagement.PermissionType",
+            "id": 5761,
+            "members": [
+              {
+                "id": 5756,
+                "name": "master",
+                "nodeType": "EnumValue",
+                "src": "135:6:4"
+              },
+              {
+                "id": 5757,
+                "name": "owner",
+                "nodeType": "EnumValue",
+                "src": "143:5:4"
+              },
+              {
+                "id": 5758,
+                "name": "write",
+                "nodeType": "EnumValue",
+                "src": "150:5:4"
+              },
+              {
+                "id": 5759,
+                "name": "read",
+                "nodeType": "EnumValue",
+                "src": "157:4:4"
+              },
+              {
+                "id": 5760,
+                "name": "none",
+                "nodeType": "EnumValue",
+                "src": "163:4:4"
+              }
+            ],
+            "name": "PermissionType",
+            "nodeType": "EnumDefinition",
+            "src": "114:54:4"
+          },
+          {
+            "canonicalName": "FolderNotarizationManagement.FolderAccessRight",
+            "id": 5776,
+            "members": [
+              {
+                "constant": false,
+                "id": 5763,
+                "name": "blockNumber",
+                "nodeType": "VariableDeclaration",
+                "scope": 5776,
+                "src": "205:16:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 5762,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "205:4:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5765,
+                "name": "timestamp",
+                "nodeType": "VariableDeclaration",
+                "scope": 5776,
+                "src": "227:14:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 5764,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "227:4:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5767,
+                "name": "dappboxfolder",
+                "nodeType": "VariableDeclaration",
+                "scope": 5776,
+                "src": "247:21:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 5766,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "247:7:4",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5769,
+                "name": "from",
+                "nodeType": "VariableDeclaration",
+                "scope": 5776,
+                "src": "274:12:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 5768,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "274:7:4",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5771,
+                "name": "to",
+                "nodeType": "VariableDeclaration",
+                "scope": 5776,
+                "src": "292:10:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 5770,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "292:7:4",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5773,
+                "name": "permissionOfFrom",
+                "nodeType": "VariableDeclaration",
+                "scope": 5776,
+                "src": "308:31:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_enum$_PermissionType_$5761",
+                  "typeString": "enum FolderNotarizationManagement.PermissionType"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 5772,
+                  "name": "PermissionType",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 5761,
+                  "src": "308:14:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_PermissionType_$5761",
+                    "typeString": "enum FolderNotarizationManagement.PermissionType"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5775,
+                "name": "permissionOfTo",
+                "nodeType": "VariableDeclaration",
+                "scope": 5776,
+                "src": "345:29:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_enum$_PermissionType_$5761",
+                  "typeString": "enum FolderNotarizationManagement.PermissionType"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 5774,
+                  "name": "PermissionType",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 5761,
+                  "src": "345:14:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_PermissionType_$5761",
+                    "typeString": "enum FolderNotarizationManagement.PermissionType"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "FolderAccessRight",
+            "nodeType": "StructDefinition",
+            "scope": 5874,
+            "src": "174:205:4",
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 5779,
+            "name": "foldhistory",
+            "nodeType": "VariableDeclaration",
+            "scope": 5874,
+            "src": "383:31:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_struct$_FolderAccessRight_$5776_storage_$dyn_storage",
+              "typeString": "struct FolderNotarizationManagement.FolderAccessRight[]"
+            },
+            "typeName": {
+              "baseType": {
+                "contractScope": null,
+                "id": 5777,
+                "name": "FolderAccessRight",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 5776,
+                "src": "383:17:4",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_FolderAccessRight_$5776_storage_ptr",
+                  "typeString": "struct FolderNotarizationManagement.FolderAccessRight"
+                }
+              },
+              "id": 5778,
+              "length": null,
+              "nodeType": "ArrayTypeName",
+              "src": "383:19:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_struct$_FolderAccessRight_$5776_storage_$dyn_storage_ptr",
+                "typeString": "struct FolderNotarizationManagement.FolderAccessRight[]"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 5783,
+            "name": "usedFolders",
+            "nodeType": "VariableDeclaration",
+            "scope": 5874,
+            "src": "421:43:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
+              "typeString": "mapping(address => bool)"
+            },
+            "typeName": {
+              "id": 5782,
+              "keyType": {
+                "id": 5780,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "429:7:4",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "421:24:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
+                "typeString": "mapping(address => bool)"
+              },
+              "valueType": {
+                "id": 5781,
+                "name": "bool",
+                "nodeType": "ElementaryTypeName",
+                "src": "440:4:4",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bool",
+                  "typeString": "bool"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 5799,
+            "name": "FolderEvent",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 5798,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5785,
+                  "indexed": false,
+                  "name": "blockNumber",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5799,
+                  "src": "488:16:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5784,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "488:4:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5787,
+                  "indexed": false,
+                  "name": "blockTimeStamp",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5799,
+                  "src": "506:19:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5786,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "506:4:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5789,
+                  "indexed": false,
+                  "name": "dappboxfolder",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5799,
+                  "src": "527:21:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5788,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "527:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5791,
+                  "indexed": false,
+                  "name": "from",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5799,
+                  "src": "550:12:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5790,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "550:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5793,
+                  "indexed": false,
+                  "name": "to",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5799,
+                  "src": "564:10:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5792,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "564:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5795,
+                  "indexed": false,
+                  "name": "permissionOfFrom",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5799,
+                  "src": "576:31:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_PermissionType_$5761",
+                    "typeString": "enum FolderNotarizationManagement.PermissionType"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 5794,
+                    "name": "PermissionType",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 5761,
+                    "src": "576:14:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_PermissionType_$5761",
+                      "typeString": "enum FolderNotarizationManagement.PermissionType"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5797,
+                  "indexed": false,
+                  "name": "permissionOfTo",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5799,
+                  "src": "609:29:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_PermissionType_$5761",
+                    "typeString": "enum FolderNotarizationManagement.PermissionType"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 5796,
+                    "name": "PermissionType",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 5761,
+                    "src": "609:14:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_PermissionType_$5761",
+                      "typeString": "enum FolderNotarizationManagement.PermissionType"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "487:152:4"
+            },
+            "src": "470:170:4"
+          },
+          {
+            "body": {
+              "id": 5840,
+              "nodeType": "Block",
+              "src": "1151:257:4",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "arguments": [
+                          {
+                            "argumentTypes": null,
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 5816,
+                              "name": "block",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 7848,
+                              "src": "1192:5:4",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_magic_block",
+                                "typeString": "block"
+                              }
+                            },
+                            "id": 5817,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "number",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": null,
+                            "src": "1192:12:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 5818,
+                              "name": "block",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 7848,
+                              "src": "1206:5:4",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_magic_block",
+                                "typeString": "block"
+                              }
+                            },
+                            "id": 5819,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "timestamp",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": null,
+                            "src": "1206:15:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 5820,
+                            "name": "dappboxfolder",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5801,
+                            "src": "1223:13:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 5821,
+                            "name": "_from",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5803,
+                            "src": "1238:5:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 5822,
+                            "name": "_to",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5805,
+                            "src": "1245:3:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 5823,
+                            "name": "_permissionOfFrom",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5807,
+                            "src": "1250:17:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_enum$_PermissionType_$5761",
+                              "typeString": "enum FolderNotarizationManagement.PermissionType"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 5824,
+                            "name": "_permissionOfTo",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5809,
+                            "src": "1269:15:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_enum$_PermissionType_$5761",
+                              "typeString": "enum FolderNotarizationManagement.PermissionType"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            },
+                            {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_enum$_PermissionType_$5761",
+                              "typeString": "enum FolderNotarizationManagement.PermissionType"
+                            },
+                            {
+                              "typeIdentifier": "t_enum$_PermissionType_$5761",
+                              "typeString": "enum FolderNotarizationManagement.PermissionType"
+                            }
+                          ],
+                          "id": 5815,
+                          "name": "FolderAccessRight",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 5776,
+                          "src": "1174:17:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_struct$_FolderAccessRight_$5776_storage_ptr_$",
+                            "typeString": "type(struct FolderNotarizationManagement.FolderAccessRight storage pointer)"
+                          }
+                        },
+                        "id": 5825,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "structConstructorCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "1174:111:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_FolderAccessRight_$5776_memory",
+                          "typeString": "struct FolderNotarizationManagement.FolderAccessRight memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_struct$_FolderAccessRight_$5776_memory",
+                          "typeString": "struct FolderNotarizationManagement.FolderAccessRight memory"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 5812,
+                        "name": "foldhistory",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5779,
+                        "src": "1157:11:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_array$_t_struct$_FolderAccessRight_$5776_storage_$dyn_storage",
+                          "typeString": "struct FolderNotarizationManagement.FolderAccessRight storage ref[] storage ref"
+                        }
+                      },
+                      "id": 5814,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "push",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": null,
+                      "src": "1157:16:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_FolderAccessRight_$5776_storage_$returns$_t_uint256_$",
+                        "typeString": "function (struct FolderNotarizationManagement.FolderAccessRight storage ref) returns (uint256)"
+                      }
+                    },
+                    "id": 5826,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1157:129:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 5827,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1157:129:4"
+                },
+                {
+                  "eventCall": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 5829,
+                          "name": "block",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 7848,
+                          "src": "1309:5:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_block",
+                            "typeString": "block"
+                          }
+                        },
+                        "id": 5830,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "number",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": null,
+                        "src": "1309:12:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 5831,
+                          "name": "block",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 7848,
+                          "src": "1323:5:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_block",
+                            "typeString": "block"
+                          }
+                        },
+                        "id": 5832,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "timestamp",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": null,
+                        "src": "1323:15:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 5833,
+                        "name": "dappboxfolder",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5801,
+                        "src": "1341:13:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 5834,
+                        "name": "_from",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5803,
+                        "src": "1356:5:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 5835,
+                        "name": "_to",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5805,
+                        "src": "1363:3:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 5836,
+                        "name": "_permissionOfFrom",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5807,
+                        "src": "1368:17:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_enum$_PermissionType_$5761",
+                          "typeString": "enum FolderNotarizationManagement.PermissionType"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 5837,
+                        "name": "_permissionOfTo",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5809,
+                        "src": "1387:15:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_enum$_PermissionType_$5761",
+                          "typeString": "enum FolderNotarizationManagement.PermissionType"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        {
+                          "typeIdentifier": "t_enum$_PermissionType_$5761",
+                          "typeString": "enum FolderNotarizationManagement.PermissionType"
+                        },
+                        {
+                          "typeIdentifier": "t_enum$_PermissionType_$5761",
+                          "typeString": "enum FolderNotarizationManagement.PermissionType"
+                        }
+                      ],
+                      "id": 5828,
+                      "name": "FolderEvent",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 5799,
+                      "src": "1297:11:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$_t_uint256_$_t_address_$_t_address_$_t_address_$_t_enum$_PermissionType_$5761_$_t_enum$_PermissionType_$5761_$returns$__$",
+                        "typeString": "function (uint256,uint256,address,address,address,enum FolderNotarizationManagement.PermissionType,enum FolderNotarizationManagement.PermissionType)"
+                      }
+                    },
+                    "id": 5838,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1297:106:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 5839,
+                  "nodeType": "EmitStatement",
+                  "src": "1292:111:4"
+                }
+              ]
+            },
+            "documentation": "@dev use to add history of transfers and emit transfer event\n@param dappboxfolder dappbox folder address\n@param _from address from whom the transfer is originated\n@param _to addess to whom transfer is done\n@param _permissionOfFrom enum PermissionType of delegator\n@param _permissionOfFrom enum PermissionType of delegated",
+            "id": 5841,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "transferFolder",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5810,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5801,
+                  "name": "dappboxfolder",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5841,
+                  "src": "1026:21:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5800,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1026:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5803,
+                  "name": "_from",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5841,
+                  "src": "1049:13:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5802,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1049:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5805,
+                  "name": "_to",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5841,
+                  "src": "1064:11:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5804,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1064:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5807,
+                  "name": "_permissionOfFrom",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5841,
+                  "src": "1077:32:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_PermissionType_$5761",
+                    "typeString": "enum FolderNotarizationManagement.PermissionType"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 5806,
+                    "name": "PermissionType",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 5761,
+                    "src": "1077:14:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_PermissionType_$5761",
+                      "typeString": "enum FolderNotarizationManagement.PermissionType"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5809,
+                  "name": "_permissionOfTo",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5841,
+                  "src": "1111:30:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_PermissionType_$5761",
+                    "typeString": "enum FolderNotarizationManagement.PermissionType"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 5808,
+                    "name": "PermissionType",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 5761,
+                    "src": "1111:14:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_PermissionType_$5761",
+                      "typeString": "enum FolderNotarizationManagement.PermissionType"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1025:117:4"
+            },
+            "returnParameters": {
+              "id": 5811,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1151:0:4"
+            },
+            "scope": 5874,
+            "src": "1002:406:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 5864,
+              "nodeType": "Block",
+              "src": "1609:121:4",
+              "statements": [
+                {
+                  "condition": {
+                    "argumentTypes": null,
+                    "baseExpression": {
+                      "argumentTypes": null,
+                      "id": 5848,
+                      "name": "usedFolders",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 5783,
+                      "src": "1619:11:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
+                        "typeString": "mapping(address => bool)"
+                      }
+                    },
+                    "id": 5850,
+                    "indexExpression": {
+                      "argumentTypes": null,
+                      "id": 5849,
+                      "name": "dappboxfolder",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 5843,
+                      "src": "1631:13:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "isConstant": false,
+                    "isLValue": true,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "IndexAccess",
+                    "src": "1619:26:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "falseBody": {
+                    "id": 5860,
+                    "nodeType": "Block",
+                    "src": "1679:28:4",
+                    "statements": [
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 5858,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "leftHandSide": {
+                            "argumentTypes": null,
+                            "id": 5856,
+                            "name": "exists",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5846,
+                            "src": "1687:6:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bool",
+                              "typeString": "bool"
+                            }
+                          },
+                          "nodeType": "Assignment",
+                          "operator": "=",
+                          "rightHandSide": {
+                            "argumentTypes": null,
+                            "hexValue": "66616c7365",
+                            "id": 5857,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "kind": "bool",
+                            "lValueRequested": false,
+                            "nodeType": "Literal",
+                            "src": "1695:5:4",
+                            "subdenomination": null,
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bool",
+                              "typeString": "bool"
+                            },
+                            "value": "false"
+                          },
+                          "src": "1687:13:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bool",
+                            "typeString": "bool"
+                          }
+                        },
+                        "id": 5859,
+                        "nodeType": "ExpressionStatement",
+                        "src": "1687:13:4"
+                      }
+                    ]
+                  },
+                  "id": 5861,
+                  "nodeType": "IfStatement",
+                  "src": "1615:92:4",
+                  "trueBody": {
+                    "id": 5855,
+                    "nodeType": "Block",
+                    "src": "1647:28:4",
+                    "statements": [
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 5853,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "leftHandSide": {
+                            "argumentTypes": null,
+                            "id": 5851,
+                            "name": "exists",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5846,
+                            "src": "1655:6:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bool",
+                              "typeString": "bool"
+                            }
+                          },
+                          "nodeType": "Assignment",
+                          "operator": "=",
+                          "rightHandSide": {
+                            "argumentTypes": null,
+                            "hexValue": "74727565",
+                            "id": 5852,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "kind": "bool",
+                            "lValueRequested": false,
+                            "nodeType": "Literal",
+                            "src": "1664:4:4",
+                            "subdenomination": null,
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bool",
+                              "typeString": "bool"
+                            },
+                            "value": "true"
+                          },
+                          "src": "1655:13:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bool",
+                            "typeString": "bool"
+                          }
+                        },
+                        "id": 5854,
+                        "nodeType": "ExpressionStatement",
+                        "src": "1655:13:4"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 5862,
+                    "name": "exists",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 5846,
+                    "src": "1719:6:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "functionReturnParameters": 5847,
+                  "id": 5863,
+                  "nodeType": "Return",
+                  "src": "1712:13:4"
+                }
+              ]
+            },
+            "documentation": "@dev use to check if the documents exists or not\n@param dappboxfolder dappbox folder address",
+            "id": 5865,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "folderExists",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5844,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5843,
+                  "name": "dappboxfolder",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5865,
+                  "src": "1551:21:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5842,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1551:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1550:23:4"
+            },
+            "returnParameters": {
+              "id": 5847,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5846,
+                  "name": "exists",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5865,
+                  "src": "1597:11:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 5845,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1597:4:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1596:13:4"
+            },
+            "scope": 5874,
+            "src": "1529:201:4",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 5872,
+              "nodeType": "Block",
+              "src": "1855:38:4",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 5870,
+                    "name": "folderCount",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 5755,
+                    "src": "1870:11:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 5869,
+                  "id": 5871,
+                  "nodeType": "Return",
+                  "src": "1863:18:4"
+                }
+              ]
+            },
+            "documentation": "@dev returns the total number of documents/hashes",
+            "id": 5873,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getLatest",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5866,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1817:2:4"
+            },
+            "returnParameters": {
+              "id": 5869,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5868,
+                  "name": "latest",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5873,
+                  "src": "1843:11:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5867,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1843:4:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1842:13:4"
+            },
+            "scope": 5874,
+            "src": "1799:94:4",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 5875,
+        "src": "34:1861:4"
+      }
+    ],
+    "src": "0:1896:4"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/sagar/Desktop/delivery final/28_may_ixxo_allsmart_contract/ixxo_smartcontracts/AccessRight/PermissionManagementComplete/contracts/FolderPermissionManagement/FolderNotarizationManagement.sol",
+    "exportedSymbols": {
+      "FolderNotarizationManagement": [
+        5874
+      ]
+    },
+    "id": 5875,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 5751,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".21",
+          "<",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:32:4"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 5874,
+        "linearizedBaseContracts": [
+          5874
+        ],
+        "name": "FolderNotarizationManagement",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 5753,
+            "name": "owner",
+            "nodeType": "VariableDeclaration",
+            "scope": 5874,
+            "src": "75:13:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 5752,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "75:7:4",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 5755,
+            "name": "folderCount",
+            "nodeType": "VariableDeclaration",
+            "scope": 5874,
+            "src": "93:16:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 5754,
+              "name": "uint",
+              "nodeType": "ElementaryTypeName",
+              "src": "93:4:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "canonicalName": "FolderNotarizationManagement.PermissionType",
+            "id": 5761,
+            "members": [
+              {
+                "id": 5756,
+                "name": "master",
+                "nodeType": "EnumValue",
+                "src": "135:6:4"
+              },
+              {
+                "id": 5757,
+                "name": "owner",
+                "nodeType": "EnumValue",
+                "src": "143:5:4"
+              },
+              {
+                "id": 5758,
+                "name": "write",
+                "nodeType": "EnumValue",
+                "src": "150:5:4"
+              },
+              {
+                "id": 5759,
+                "name": "read",
+                "nodeType": "EnumValue",
+                "src": "157:4:4"
+              },
+              {
+                "id": 5760,
+                "name": "none",
+                "nodeType": "EnumValue",
+                "src": "163:4:4"
+              }
+            ],
+            "name": "PermissionType",
+            "nodeType": "EnumDefinition",
+            "src": "114:54:4"
+          },
+          {
+            "canonicalName": "FolderNotarizationManagement.FolderAccessRight",
+            "id": 5776,
+            "members": [
+              {
+                "constant": false,
+                "id": 5763,
+                "name": "blockNumber",
+                "nodeType": "VariableDeclaration",
+                "scope": 5776,
+                "src": "205:16:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 5762,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "205:4:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5765,
+                "name": "timestamp",
+                "nodeType": "VariableDeclaration",
+                "scope": 5776,
+                "src": "227:14:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 5764,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "227:4:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5767,
+                "name": "dappboxfolder",
+                "nodeType": "VariableDeclaration",
+                "scope": 5776,
+                "src": "247:21:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 5766,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "247:7:4",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5769,
+                "name": "from",
+                "nodeType": "VariableDeclaration",
+                "scope": 5776,
+                "src": "274:12:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 5768,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "274:7:4",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5771,
+                "name": "to",
+                "nodeType": "VariableDeclaration",
+                "scope": 5776,
+                "src": "292:10:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 5770,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "292:7:4",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5773,
+                "name": "permissionOfFrom",
+                "nodeType": "VariableDeclaration",
+                "scope": 5776,
+                "src": "308:31:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_enum$_PermissionType_$5761",
+                  "typeString": "enum FolderNotarizationManagement.PermissionType"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 5772,
+                  "name": "PermissionType",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 5761,
+                  "src": "308:14:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_PermissionType_$5761",
+                    "typeString": "enum FolderNotarizationManagement.PermissionType"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 5775,
+                "name": "permissionOfTo",
+                "nodeType": "VariableDeclaration",
+                "scope": 5776,
+                "src": "345:29:4",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_enum$_PermissionType_$5761",
+                  "typeString": "enum FolderNotarizationManagement.PermissionType"
+                },
+                "typeName": {
+                  "contractScope": null,
+                  "id": 5774,
+                  "name": "PermissionType",
+                  "nodeType": "UserDefinedTypeName",
+                  "referencedDeclaration": 5761,
+                  "src": "345:14:4",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_PermissionType_$5761",
+                    "typeString": "enum FolderNotarizationManagement.PermissionType"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "FolderAccessRight",
+            "nodeType": "StructDefinition",
+            "scope": 5874,
+            "src": "174:205:4",
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 5779,
+            "name": "foldhistory",
+            "nodeType": "VariableDeclaration",
+            "scope": 5874,
+            "src": "383:31:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_struct$_FolderAccessRight_$5776_storage_$dyn_storage",
+              "typeString": "struct FolderNotarizationManagement.FolderAccessRight[]"
+            },
+            "typeName": {
+              "baseType": {
+                "contractScope": null,
+                "id": 5777,
+                "name": "FolderAccessRight",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 5776,
+                "src": "383:17:4",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_FolderAccessRight_$5776_storage_ptr",
+                  "typeString": "struct FolderNotarizationManagement.FolderAccessRight"
+                }
+              },
+              "id": 5778,
+              "length": null,
+              "nodeType": "ArrayTypeName",
+              "src": "383:19:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_struct$_FolderAccessRight_$5776_storage_$dyn_storage_ptr",
+                "typeString": "struct FolderNotarizationManagement.FolderAccessRight[]"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 5783,
+            "name": "usedFolders",
+            "nodeType": "VariableDeclaration",
+            "scope": 5874,
+            "src": "421:43:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
+              "typeString": "mapping(address => bool)"
+            },
+            "typeName": {
+              "id": 5782,
+              "keyType": {
+                "id": 5780,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "429:7:4",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "421:24:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
+                "typeString": "mapping(address => bool)"
+              },
+              "valueType": {
+                "id": 5781,
+                "name": "bool",
+                "nodeType": "ElementaryTypeName",
+                "src": "440:4:4",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bool",
+                  "typeString": "bool"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 5799,
+            "name": "FolderEvent",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 5798,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5785,
+                  "indexed": false,
+                  "name": "blockNumber",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5799,
+                  "src": "488:16:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5784,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "488:4:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5787,
+                  "indexed": false,
+                  "name": "blockTimeStamp",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5799,
+                  "src": "506:19:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5786,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "506:4:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5789,
+                  "indexed": false,
+                  "name": "dappboxfolder",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5799,
+                  "src": "527:21:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5788,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "527:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5791,
+                  "indexed": false,
+                  "name": "from",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5799,
+                  "src": "550:12:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5790,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "550:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5793,
+                  "indexed": false,
+                  "name": "to",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5799,
+                  "src": "564:10:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5792,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "564:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5795,
+                  "indexed": false,
+                  "name": "permissionOfFrom",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5799,
+                  "src": "576:31:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_PermissionType_$5761",
+                    "typeString": "enum FolderNotarizationManagement.PermissionType"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 5794,
+                    "name": "PermissionType",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 5761,
+                    "src": "576:14:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_PermissionType_$5761",
+                      "typeString": "enum FolderNotarizationManagement.PermissionType"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5797,
+                  "indexed": false,
+                  "name": "permissionOfTo",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5799,
+                  "src": "609:29:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_PermissionType_$5761",
+                    "typeString": "enum FolderNotarizationManagement.PermissionType"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 5796,
+                    "name": "PermissionType",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 5761,
+                    "src": "609:14:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_PermissionType_$5761",
+                      "typeString": "enum FolderNotarizationManagement.PermissionType"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "487:152:4"
+            },
+            "src": "470:170:4"
+          },
+          {
+            "body": {
+              "id": 5840,
+              "nodeType": "Block",
+              "src": "1151:257:4",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "arguments": [
+                          {
+                            "argumentTypes": null,
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 5816,
+                              "name": "block",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 7848,
+                              "src": "1192:5:4",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_magic_block",
+                                "typeString": "block"
+                              }
+                            },
+                            "id": 5817,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "number",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": null,
+                            "src": "1192:12:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 5818,
+                              "name": "block",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 7848,
+                              "src": "1206:5:4",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_magic_block",
+                                "typeString": "block"
+                              }
+                            },
+                            "id": 5819,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "timestamp",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": null,
+                            "src": "1206:15:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 5820,
+                            "name": "dappboxfolder",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5801,
+                            "src": "1223:13:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 5821,
+                            "name": "_from",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5803,
+                            "src": "1238:5:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 5822,
+                            "name": "_to",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5805,
+                            "src": "1245:3:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 5823,
+                            "name": "_permissionOfFrom",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5807,
+                            "src": "1250:17:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_enum$_PermissionType_$5761",
+                              "typeString": "enum FolderNotarizationManagement.PermissionType"
+                            }
+                          },
+                          {
+                            "argumentTypes": null,
+                            "id": 5824,
+                            "name": "_permissionOfTo",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5809,
+                            "src": "1269:15:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_enum$_PermissionType_$5761",
+                              "typeString": "enum FolderNotarizationManagement.PermissionType"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            },
+                            {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_enum$_PermissionType_$5761",
+                              "typeString": "enum FolderNotarizationManagement.PermissionType"
+                            },
+                            {
+                              "typeIdentifier": "t_enum$_PermissionType_$5761",
+                              "typeString": "enum FolderNotarizationManagement.PermissionType"
+                            }
+                          ],
+                          "id": 5815,
+                          "name": "FolderAccessRight",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 5776,
+                          "src": "1174:17:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_struct$_FolderAccessRight_$5776_storage_ptr_$",
+                            "typeString": "type(struct FolderNotarizationManagement.FolderAccessRight storage pointer)"
+                          }
+                        },
+                        "id": 5825,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "structConstructorCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "1174:111:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_struct$_FolderAccessRight_$5776_memory",
+                          "typeString": "struct FolderNotarizationManagement.FolderAccessRight memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_struct$_FolderAccessRight_$5776_memory",
+                          "typeString": "struct FolderNotarizationManagement.FolderAccessRight memory"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 5812,
+                        "name": "foldhistory",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5779,
+                        "src": "1157:11:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_array$_t_struct$_FolderAccessRight_$5776_storage_$dyn_storage",
+                          "typeString": "struct FolderNotarizationManagement.FolderAccessRight storage ref[] storage ref"
+                        }
+                      },
+                      "id": 5814,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "push",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": null,
+                      "src": "1157:16:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_arraypush_nonpayable$_t_struct$_FolderAccessRight_$5776_storage_$returns$_t_uint256_$",
+                        "typeString": "function (struct FolderNotarizationManagement.FolderAccessRight storage ref) returns (uint256)"
+                      }
+                    },
+                    "id": 5826,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1157:129:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "id": 5827,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1157:129:4"
+                },
+                {
+                  "eventCall": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 5829,
+                          "name": "block",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 7848,
+                          "src": "1309:5:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_block",
+                            "typeString": "block"
+                          }
+                        },
+                        "id": 5830,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "number",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": null,
+                        "src": "1309:12:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 5831,
+                          "name": "block",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 7848,
+                          "src": "1323:5:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_block",
+                            "typeString": "block"
+                          }
+                        },
+                        "id": 5832,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "timestamp",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": null,
+                        "src": "1323:15:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 5833,
+                        "name": "dappboxfolder",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5801,
+                        "src": "1341:13:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 5834,
+                        "name": "_from",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5803,
+                        "src": "1356:5:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 5835,
+                        "name": "_to",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5805,
+                        "src": "1363:3:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 5836,
+                        "name": "_permissionOfFrom",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5807,
+                        "src": "1368:17:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_enum$_PermissionType_$5761",
+                          "typeString": "enum FolderNotarizationManagement.PermissionType"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "id": 5837,
+                        "name": "_permissionOfTo",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 5809,
+                        "src": "1387:15:4",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_enum$_PermissionType_$5761",
+                          "typeString": "enum FolderNotarizationManagement.PermissionType"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        {
+                          "typeIdentifier": "t_enum$_PermissionType_$5761",
+                          "typeString": "enum FolderNotarizationManagement.PermissionType"
+                        },
+                        {
+                          "typeIdentifier": "t_enum$_PermissionType_$5761",
+                          "typeString": "enum FolderNotarizationManagement.PermissionType"
+                        }
+                      ],
+                      "id": 5828,
+                      "name": "FolderEvent",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 5799,
+                      "src": "1297:11:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$_t_uint256_$_t_address_$_t_address_$_t_address_$_t_enum$_PermissionType_$5761_$_t_enum$_PermissionType_$5761_$returns$__$",
+                        "typeString": "function (uint256,uint256,address,address,address,enum FolderNotarizationManagement.PermissionType,enum FolderNotarizationManagement.PermissionType)"
+                      }
+                    },
+                    "id": 5838,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1297:106:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 5839,
+                  "nodeType": "EmitStatement",
+                  "src": "1292:111:4"
+                }
+              ]
+            },
+            "documentation": "@dev use to add history of transfers and emit transfer event\n@param dappboxfolder dappbox folder address\n@param _from address from whom the transfer is originated\n@param _to addess to whom transfer is done\n@param _permissionOfFrom enum PermissionType of delegator\n@param _permissionOfFrom enum PermissionType of delegated",
+            "id": 5841,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "transferFolder",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5810,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5801,
+                  "name": "dappboxfolder",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5841,
+                  "src": "1026:21:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5800,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1026:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5803,
+                  "name": "_from",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5841,
+                  "src": "1049:13:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5802,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1049:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5805,
+                  "name": "_to",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5841,
+                  "src": "1064:11:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5804,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1064:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5807,
+                  "name": "_permissionOfFrom",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5841,
+                  "src": "1077:32:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_PermissionType_$5761",
+                    "typeString": "enum FolderNotarizationManagement.PermissionType"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 5806,
+                    "name": "PermissionType",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 5761,
+                    "src": "1077:14:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_PermissionType_$5761",
+                      "typeString": "enum FolderNotarizationManagement.PermissionType"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5809,
+                  "name": "_permissionOfTo",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5841,
+                  "src": "1111:30:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_PermissionType_$5761",
+                    "typeString": "enum FolderNotarizationManagement.PermissionType"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 5808,
+                    "name": "PermissionType",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 5761,
+                    "src": "1111:14:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_PermissionType_$5761",
+                      "typeString": "enum FolderNotarizationManagement.PermissionType"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1025:117:4"
+            },
+            "returnParameters": {
+              "id": 5811,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1151:0:4"
+            },
+            "scope": 5874,
+            "src": "1002:406:4",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 5864,
+              "nodeType": "Block",
+              "src": "1609:121:4",
+              "statements": [
+                {
+                  "condition": {
+                    "argumentTypes": null,
+                    "baseExpression": {
+                      "argumentTypes": null,
+                      "id": 5848,
+                      "name": "usedFolders",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 5783,
+                      "src": "1619:11:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_mapping$_t_address_$_t_bool_$",
+                        "typeString": "mapping(address => bool)"
+                      }
+                    },
+                    "id": 5850,
+                    "indexExpression": {
+                      "argumentTypes": null,
+                      "id": 5849,
+                      "name": "dappboxfolder",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 5843,
+                      "src": "1631:13:4",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "isConstant": false,
+                    "isLValue": true,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "nodeType": "IndexAccess",
+                    "src": "1619:26:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "falseBody": {
+                    "id": 5860,
+                    "nodeType": "Block",
+                    "src": "1679:28:4",
+                    "statements": [
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 5858,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "leftHandSide": {
+                            "argumentTypes": null,
+                            "id": 5856,
+                            "name": "exists",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5846,
+                            "src": "1687:6:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bool",
+                              "typeString": "bool"
+                            }
+                          },
+                          "nodeType": "Assignment",
+                          "operator": "=",
+                          "rightHandSide": {
+                            "argumentTypes": null,
+                            "hexValue": "66616c7365",
+                            "id": 5857,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "kind": "bool",
+                            "lValueRequested": false,
+                            "nodeType": "Literal",
+                            "src": "1695:5:4",
+                            "subdenomination": null,
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bool",
+                              "typeString": "bool"
+                            },
+                            "value": "false"
+                          },
+                          "src": "1687:13:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bool",
+                            "typeString": "bool"
+                          }
+                        },
+                        "id": 5859,
+                        "nodeType": "ExpressionStatement",
+                        "src": "1687:13:4"
+                      }
+                    ]
+                  },
+                  "id": 5861,
+                  "nodeType": "IfStatement",
+                  "src": "1615:92:4",
+                  "trueBody": {
+                    "id": 5855,
+                    "nodeType": "Block",
+                    "src": "1647:28:4",
+                    "statements": [
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "id": 5853,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "leftHandSide": {
+                            "argumentTypes": null,
+                            "id": 5851,
+                            "name": "exists",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 5846,
+                            "src": "1655:6:4",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bool",
+                              "typeString": "bool"
+                            }
+                          },
+                          "nodeType": "Assignment",
+                          "operator": "=",
+                          "rightHandSide": {
+                            "argumentTypes": null,
+                            "hexValue": "74727565",
+                            "id": 5852,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "kind": "bool",
+                            "lValueRequested": false,
+                            "nodeType": "Literal",
+                            "src": "1664:4:4",
+                            "subdenomination": null,
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bool",
+                              "typeString": "bool"
+                            },
+                            "value": "true"
+                          },
+                          "src": "1655:13:4",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bool",
+                            "typeString": "bool"
+                          }
+                        },
+                        "id": 5854,
+                        "nodeType": "ExpressionStatement",
+                        "src": "1655:13:4"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 5862,
+                    "name": "exists",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 5846,
+                    "src": "1719:6:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "functionReturnParameters": 5847,
+                  "id": 5863,
+                  "nodeType": "Return",
+                  "src": "1712:13:4"
+                }
+              ]
+            },
+            "documentation": "@dev use to check if the documents exists or not\n@param dappboxfolder dappbox folder address",
+            "id": 5865,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "folderExists",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5844,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5843,
+                  "name": "dappboxfolder",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5865,
+                  "src": "1551:21:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5842,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1551:7:4",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1550:23:4"
+            },
+            "returnParameters": {
+              "id": 5847,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5846,
+                  "name": "exists",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5865,
+                  "src": "1597:11:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 5845,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1597:4:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1596:13:4"
+            },
+            "scope": 5874,
+            "src": "1529:201:4",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 5872,
+              "nodeType": "Block",
+              "src": "1855:38:4",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 5870,
+                    "name": "folderCount",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 5755,
+                    "src": "1870:11:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 5869,
+                  "id": 5871,
+                  "nodeType": "Return",
+                  "src": "1863:18:4"
+                }
+              ]
+            },
+            "documentation": "@dev returns the total number of documents/hashes",
+            "id": 5873,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getLatest",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5866,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1817:2:4"
+            },
+            "returnParameters": {
+              "id": 5869,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5868,
+                  "name": "latest",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5873,
+                  "src": "1843:11:4",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5867,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1843:4:4",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1842:13:4"
+            },
+            "scope": 5874,
+            "src": "1799:94:4",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 5875,
+        "src": "34:1861:4"
+      }
+    ],
+    "src": "0:1896:4"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.6",
+  "updatedAt": "2019-05-28T08:56:59.332Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

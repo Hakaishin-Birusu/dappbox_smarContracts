@@ -1,0 +1,66 @@
+{
+  "contract_name": "Math",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "FP_SCALE",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "v1",
+          "type": "uint256"
+        },
+        {
+          "name": "v2",
+          "type": "uint256"
+        }
+      ],
+      "name": "absDiff",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "a",
+          "type": "uint256"
+        },
+        {
+          "name": "b",
+          "type": "uint256"
+        }
+      ],
+      "name": "safeMul",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    }
+  ],
+  "unlinked_binary": "0x6060604052341561000c57fe5b5b6101498061001c6000396000f300606060405263ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416635573a34c8114610050578063a09ae0aa14610072578063d05c78da1461009a575bfe5b341561005857fe5b6100606100c2565b60408051918252519081900360200190f35b341561007a57fe5b6100606004356024356100c8565b60408051918252519081900360200190f35b34156100a257fe5b6100606004356024356100e6565b60408051918252519081900360200190f35b61271081565b60008183116100d9578282036100dd565b8183035b90505b92915050565b600082820283158061010257508284828115156100ff57fe5b04145b1561010f57809150610115565b60006000fd5b5b50929150505600a165627a7a723058208d89bce5c62424aaefbc3488980243ad05b07a17be5d227d831ca0c3c39de4d60029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1497651702134
+}

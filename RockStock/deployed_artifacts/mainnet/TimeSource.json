@@ -1,0 +1,35 @@
+{
+  "contract_name": "TimeSource",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "t",
+          "type": "uint32"
+        }
+      ],
+      "name": "mockTime",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "currentTime",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint32"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    }
+  ],
+  "unlinked_binary": "0x6060604052341561000c57fe5b5b61010c8061001c6000396000f300606060405263ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663c4e7099f81146043578063d18e81b314605b575bfe5b3415604a57fe5b605963ffffffff600435166081565b005b3415606257fe5b606860aa565b6040805163ffffffff9092168252519081900360200190f35b6232993d43111560915760006000fd5b6000805463ffffffff191663ffffffff83161790555b50565b600063ffffffff42111560bd5760006000fd5b6000805463ffffffff161160d0574260da565b60005463ffffffff165b90505b905600a165627a7a72305820b6b1fdc086359b195a39fc8641f5c079f4c53d49166678742dee7a84eebd84630029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1497651702135
+}

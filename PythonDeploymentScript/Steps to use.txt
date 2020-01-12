@@ -1,0 +1,27 @@
+Procedure :
+
+1) Install python3 
+2) Install solc compiler (recommended version == 0.4.25) 
+3) Set environment variable path (if needed)
+4) Install node js 
+5) Setup the python virtual enviornment 
+    => python3 -m pip install --user virtualenv
+6) Create virtual environment
+    => virtualenv virtualenv_name
+7) Invoke the virtual environment , and then install all the requiremnts 
+    => .\virtualenv_name\Scripts\activate
+8) Install the pip in virtual env
+9) To install the requirement =>
+    => sudo pip install -r requiremnt.txt
+10) Update the web3 socket to newest version 
+    => pip install websockets==7.0
+11) Select the correct solc version (not needed if using 0.4.25 exactly)
+12) Run the script using (inside virtual enviornment)
+    => python DeploymentScript.py
+10) Check , new .txt files will be created on successful deploymnet of contracts ,
+    These files has respective deploymnet information in it.
+
+NOTE : Do not make any changes in script (i.e , DeploymentScript), since it contains abi and bin
+Of contract , slight change in script will definitly cost DeploymentScript.py failure.
+
+

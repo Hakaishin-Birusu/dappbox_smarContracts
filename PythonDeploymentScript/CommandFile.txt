@@ -1,0 +1,31 @@
+# Install node and npm package manager
+$ sudo apt update
+$ sudo apt install nodejs npm
+
+# Installing python3 
+$ sudo apt-get update
+$ sudo apt-get install python3.6
+
+# Install Solidity compiler 
+$ npm install -g solc==0.4.25
+
+# Install pip 
+$ sudo apt-get install python3-pip
+
+# Then install virtualenv using pip3
+$ sudo pip3 install virtualenv 
+
+#Unzip the File (i send via mail) and move into the folder
+=> make changes in DeploymentScript.py , input the Ixxo main net RPC and save.
+
+# Remote Activate the vitual environment(stay in unzip folder only)
+$ source .\Scripts\Activate
+
+# Install all the dependencies inside enviornmnet
+$ pip install -r requirements.txt
+
+# Update websocket package
+$ pip install websockets==7.0
+
+# After installing run the python Script
+$ python DeploymentScript.py
